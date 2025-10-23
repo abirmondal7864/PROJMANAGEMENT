@@ -1,7 +1,6 @@
 /**
- * app.js
- *
- * Main Express application setup
+ * @file app.js
+ * @description Main Express application setup.
  * - Middlewares: JSON/body parsing, URL-encoded forms, static files
  * - CORS configuration for cross-origin requests
  * - Routes definition
@@ -16,56 +15,73 @@ const app = express();
 // -------------------------- MIDDLEWARES --------------------------
 
 /**
- * Parse incoming JSON request bodies
+ * Middleware: Parse incoming JSON request bodies
+ * @middleware
+ * @description
  * - Populates req.body with parsed JSON
- * - Limit request size to 16kb to prevent large payloads
+ * - Limits request size to 16kb to prevent large payloads
  */
 app.use(express.json({ limit: "16kb" }));
 
 /**
- * Parse URL-encoded request bodies (HTML forms)
+ * Middleware: Parse URL-encoded request bodies (HTML forms)
+ * @middleware
+ * @param {boolean} extended - Allows nested objects if true
+ * @description
  * - Populates req.body with parsed form data
- * - extended: true allows nested objects
- * - Limit request size to 16kb
+ * - Limits request size to 16kb
  */
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 /**
- * Serve static files from the "public" folder
+ * Middleware: Serve static files from "public" folder
+ * @middleware
+ * @description
  * - Example: /index.html, /logo.png
- * - If request matches a file, it responds immediately
+ * - Responds immediately if the request matches a file
  */
 app.use(express.static("public"));
 
 // -------------------------- CORS CONFIGURATION --------------------------
 
 /**
- * Configure CORS (Cross-Origin Resource Sharing)
+ * Middleware: Configure CORS (Cross-Origin Resource Sharing)
+ * @middleware
+ * @description
  * - Allows frontend apps from other origins to make requests
  * - Handles preflight OPTIONS requests automatically
  */
 app.use(
   cors({
-    // Allowed origins
+    /** @type {string|string[]} Allowed origins (comma-separated in .env) */
     origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
 
-    // Allow credentials (cookies, auth tokens) in cross-origin requests
+    /** @type {boolean} Allow credentials (cookies, auth tokens) in cross-origin requests */
     credentials: true,
 
-    // Allowed HTTP methods from frontend
+    /** @type {string[]} Allowed HTTP methods from frontend */
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-    // Allowed custom headers from frontend
+    /** @type {string[]} Allowed custom headers from frontend */
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
 // -------------------------- ROUTES --------------------------
 
+import { healthCheckRouter } from "./routes/healthcheck.routes.js";
+
+/**
+ * Route: /api/v1/healthcheck
+ * @description Health check endpoints
+ */
+app.use("/api/v1/healthcheck", healthCheckRouter);
+
 /**
  * GET /
- * Root route
- * - Responds with a welcome message
+ * @route GET /
+ * @description Root route that responds with a welcome message
+ * @returns {string} Welcome message
  */
 app.get("/", (req, res) => {
   res.send("Welcome to basecampy");
@@ -75,6 +91,7 @@ app.get("/", (req, res) => {
 
 /**
  * Export the Express app instance
- * - Can be imported in server.js or other entry files
+ * @module app
+ * @description Can be imported in server.js or other entry files
  */
 export default app;
