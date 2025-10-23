@@ -69,7 +69,7 @@ app.use(
 
 // -------------------------- ROUTES --------------------------
 
-import { healthCheckRouter } from "./routes/healthcheck.routes.js";
+import  healthCheckRouter from "./routes/healthcheck.routes.js";
 
 /**
  * Route: /api/v1/healthcheck

@@ -21,6 +21,7 @@ const router = Router();
  *   "message": "Server is running"
  * }
  */
+
 router.route("/").get(healthCheck);
 
 export default router;
