@@ -3,20 +3,23 @@ import { ApiResponse } from "../utils/api-response.js";
 /**
  * Health check controller.
  *
- * Responds with a 200 OK status and a JSON message indicating the server is running.
+ * Responds with a 200 OK status if the server is running.
  *
- * @param {import("express").Request} req - The Express request object
- * @param {import("express").Response} res - The Express response object
- * @returns {void} Sends JSON response to the client
+ * @async
+ * @param {import("express").Request} req - Express request object
+ * @param {import("express").Response} res - Express response object
+ * @param {import("express").NextFunction} next - Call to pass control to the next middleware.
+ *   If an error is passed, Express skips normal middleware and goes to the error handler.
+ * @returns {Promise<void>} Sends JSON response to the client
  */
-const healthCheck = (req, res) => {
+const healthCheck = async (req, res, next) => {
   try {
+    const user = await getUserFromDB(); // Example DB check
     res
       .status(200)
       .json(new ApiResponse(200, { message: "Server is running" }));
   } catch (error) {
-    // Optionally handle errors here
-    res.status(500).json(new ApiResponse(500, null, error.message));
+    next(error); // Pass error to Express error-handling middleware
   }
 };
 
