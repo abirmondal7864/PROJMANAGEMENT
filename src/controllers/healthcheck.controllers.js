@@ -1,26 +1,49 @@
+// Import custom utility class for standardized API responses
 import { ApiResponse } from "../utils/api-response.js";
 
+// Import async handler utility to simplify async error handling
+import { asyncHandler } from "../utils/async-handler.js";
+
 /**
- * Health check controller.
+ * ✅ Preferred version (using asyncHandler)
  *
- * Responds with a 200 OK status if the server is running.
+ * @desc    Health check endpoint to verify server status
+ * @route   GET /
+ * @access  Public
  *
- * @async
- * @param {import("express").Request} req - Express request object
- * @param {import("express").Response} res - Express response object
- * @param {import("express").NextFunction} next - Call to pass control to the next middleware.
- *   If an error is passed, Express skips normal middleware and goes to the error handler.
- * @returns {Promise<void>} Sends JSON response to the client
+ * - `asyncHandler` automatically wraps the async function in a try/catch.
+ * - If an error occurs, it forwards it to Express's error middleware.
+ * - Keeps code clean and avoids repeating try/catch in every route.
  */
+const healthCheck = asyncHandler(async (req, res) => {
+  res.status(200).json(
+    new ApiResponse(200, { message: "Server is running" }), // Consistent API format
+  );
+});
+
+/**
+ * ⚠️ Older / Less preferred version (manual try-catch)
+ *
+ * This version works fine but becomes repetitive when you have many routes.
+ * Developers prefer using `asyncHandler` (above) to reduce boilerplate code.
+ */
+/*
 const healthCheck = async (req, res, next) => {
   try {
-    const user = await getUserFromDB(); // Example DB check
+    // Example async operation (e.g., DB ping)
+    // const dbCheck = await checkDatabaseConnection();
+
     res
       .status(200)
-      .json(new ApiResponse(200, { message: "Server is running" }));
+      .json(
+        new ApiResponse(200, { message: "Server is running" })
+      );
   } catch (error) {
-    next(error); // Pass error to Express error-handling middleware
+    // Manually forward error to Express error middleware
+    next(error);
   }
 };
+*/
 
+// Export the preferred version
 export { healthCheck };
